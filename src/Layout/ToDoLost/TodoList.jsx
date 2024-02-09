@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const TodoList = () => {
-  const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState(() => {
+        const storedTasks = localStorage.getItem('tasks');
+        return storedTasks ? JSON.parse(storedTasks) : [];
+      });
   const [newTask, setNewTask] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('low');
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editedTaskText, setEditedTaskText] = useState('');
   const [editedTaskPriority, setEditedTaskPriority] = useState('');
 
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
   const addTask = () => {
     if (newTask.trim() !== '') {
       const newTasks = [...tasks, { id: Date.now(), text: newTask, completed: false, priority: newTaskPriority }];
@@ -52,10 +58,7 @@ const TodoList = () => {
     }
   };
 
-  // Count total tasks
   const totalTasks = tasks.length;
-
-  // Count completed tasks
   const completedTasks = tasks.filter(task => task.completed).length;
 
   return (
