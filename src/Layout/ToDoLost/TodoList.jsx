@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import "./styles.css";
+import ReactPaginate from "react-paginate";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState(() => {
@@ -13,6 +14,9 @@ const TodoList = () => {
   const [editedTaskText, setEditedTaskText] = useState("");
   const [editedTaskPriority, setEditedTaskPriority] = useState("");
   const [filterPriority, setFilterPriority] = useState(null);
+  const [pageNumber, setPageNumber] = useState(0);
+  const tasksPerPage = 10;
+  const pagesVisited = pageNumber * tasksPerPage;
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -141,6 +145,15 @@ const TodoList = () => {
     ? tasks.filter((task) => task.priority === filterPriority)
     : tasks;
 
+  const handlePageChange = ({ selected }) => {
+    setPageNumber(selected);
+  };
+
+  const displayedTasks = filteredTasks.slice(
+    pagesVisited,
+    pagesVisited + tasksPerPage
+  );
+
   return (
     <div className="container mx-auto pt-8 mb-10 bg-gray-300">
       <h1 className="text-3xl font-bold text-center mb-8">Todo List</h1>
@@ -201,7 +214,7 @@ const TodoList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.map((task) => (
+            {displayedTasks.map((task) => (
               <tr
                 key={task.id}
                 className={
@@ -293,6 +306,16 @@ const TodoList = () => {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="pagination-container">
+        <ReactPaginate
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          pageCount={Math.ceil(tasks.length / tasksPerPage)}
+          onPageChange={handlePageChange}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+        />
       </div>
     </div>
   );
