@@ -1,17 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import "./index.css";
-import Homepage from './Layout/Homepage/Homepage.jsx';
+import TodoList from './Layout/ToDoLost/TodoList';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Homepage></Homepage>,
+    element: <TodoList></TodoList>,
   },
 ]);
 
