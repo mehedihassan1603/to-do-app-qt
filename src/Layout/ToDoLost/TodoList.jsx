@@ -5,6 +5,9 @@ const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState('low');
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editedTaskText, setEditedTaskText] = useState('');
+  const [editedTaskPriority, setEditedTaskPriority] = useState('');
 
   const addTask = () => {
     if (newTask.trim() !== '') {
@@ -13,6 +16,15 @@ const TodoList = () => {
       setNewTask('');
       setNewTaskPriority('low');
     }
+  };
+  const editTask = id => {
+    const updatedTasks = tasks.map(task =>
+      task.id === id ? { ...task, text: editedTaskText || task.text, priority: editedTaskPriority || task.priority } : task
+    );
+    setTasks(updatedTasks);
+    setEditingTaskId(null);
+    setEditedTaskText('');
+    setEditedTaskPriority('');
   };
   const deleteTask = id => {
     const updatedTasks = tasks.filter(task => task.id !== id);
@@ -55,6 +67,7 @@ const TodoList = () => {
           Add Task
         </button>
       </div>
+      
       <table className="table-auto w-full">
         <thead>
           <tr>
@@ -66,26 +79,64 @@ const TodoList = () => {
         </thead>
         <tbody>
           {tasks.map(task => (
-            <tr >
+            <tr key={task.id} className={editingTaskId === task.id ? 'bg-gray-100' : ''}>
               <td className="border px-4 py-2">
-                {task.text}
+                {editingTaskId === task.id ? (
+                  <input
+                    type="text"
+                    value={editedTaskText || task.text}
+                    onChange={e => setEditedTaskText(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 focus:outline-none"
+                  />
+                ) : (
+                  task.text
+                )}
               </td>
               <td className={`border px-4 py-2 ${priorityColor(task.priority)}`}>
-                {
-                  
+                {editingTaskId === task.id ? (
+                  <select
+                    value={editedTaskPriority || task.priority}
+                    onChange={e => setEditedTaskPriority(e.target.value)}
+                    className="px-2 py-1 border border-gray-300 focus:outline-none"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                ) : (
                   task.priority
-                }
+                )}
               </td>
               <td className="border px-4 py-2">
                 <button
-                  
-                >
+                  >
                   {task.completed ? 'Completed' : 'Complete'}
                 </button>
               </td>
-              <td>
-              <button
-                      
+              <td className="border px-4 py-2">
+                {editingTaskId === task.id ? (
+                  <>
+                    <button
+                      onClick={() => editTask(task.id)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded focus:outline-none mr-2"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingTaskId(null);
+                        setEditedTaskText('');
+                        setEditedTaskPriority('');
+                      }}
+                      className="px-3 py-1 bg-gray-500 text-white rounded focus:outline-none"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setEditingTaskId(task.id)}
                       className="px-3 py-1 bg-blue-500 text-white rounded focus:outline-none mr-2"
                     >
                       Edit
@@ -96,6 +147,8 @@ const TodoList = () => {
                     >
                       Delete
                     </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
@@ -106,3 +159,4 @@ const TodoList = () => {
 };
 
 export default TodoList;
+
