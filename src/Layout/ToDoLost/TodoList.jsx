@@ -157,18 +157,18 @@ const TodoList = () => {
   return (
     <div className="container mx-auto pt-8 mb-10 bg-gray-300">
       <h1 className="text-3xl font-bold text-center mb-8">Todo List</h1>
-      <div className="mb-6 flex justify-center items-center">
+      <div className="mb-6 w-10/12 md:w-9/12 mx-auto flex flex-col md:flex-row gap-3 justify-center items-center">
         <input
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter a new task..."
-          className="mr-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+          className="mr-2 px-3 py-2 w-full border border-gray-300 rounded-lg focus:outline-none"
         />
         <select
           value={newTaskPriority}
           onChange={(e) => setNewTaskPriority(e.target.value)}
-          className="mr-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
+          className="mr-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -176,7 +176,7 @@ const TodoList = () => {
         </select>
         <button
           onClick={addTask}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
+          className="px-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
         >
           Add Task
         </button>
@@ -206,11 +206,11 @@ const TodoList = () => {
       <div className="overflow-x-auto">
         <table className="w-full bg-cyan-400 border-gray-300 rounded-lg shadow-md">
           <thead>
-            <tr className="bg-slate-600 border-b text-white font-bold text-lg">
-              <th className="px-4 py-2">Task</th>
-              <th className="px-4 py-2">Priority</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Action</th>
+            <tr className="bg-slate-600 border-b text-white font-bold text-sm md:text-lg">
+              <th className="px-1 md:px-4 py-2">Task</th>
+              <th className="px-1 md:px-4 py-2">Priority</th>
+              <th className="px-1 md:px-4 py-2">Status</th>
+              <th className="px-1 md:px-4 py-2">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -259,7 +259,7 @@ const TodoList = () => {
                       task.completed
                         ? "bg-green-500 hover:bg-green-600"
                         : "bg-yellow-500 hover:bg-yellow-600"
-                    } text-white rounded focus:outline-none`}
+                    } text-white text-sm md:text-lg rounded focus:outline-none`}
                   >
                     {task.completed ? "Completed" : "Incomplete"}
                   </button>
