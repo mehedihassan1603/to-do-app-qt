@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import React, { useState } from 'react';
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
@@ -17,6 +16,7 @@ const TodoList = () => {
       setNewTaskPriority('low');
     }
   };
+
   const toggleCompletion = id => {
     const updatedTasks = tasks.map(task =>
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -33,10 +33,12 @@ const TodoList = () => {
     setEditedTaskText('');
     setEditedTaskPriority('');
   };
+
   const deleteTask = id => {
     const updatedTasks = tasks.filter(task => task.id !== id);
     setTasks(updatedTasks);
   };
+
   const priorityColor = priority => {
     switch (priority) {
       case 'low':
@@ -49,6 +51,12 @@ const TodoList = () => {
         return 'bg-green-500';
     }
   };
+
+  // Count total tasks
+  const totalTasks = tasks.length;
+
+  // Count completed tasks
+  const completedTasks = tasks.filter(task => task.completed).length;
 
   return (
     <div className="container mx-auto mt-8">
@@ -74,7 +82,8 @@ const TodoList = () => {
           Add Task
         </button>
       </div>
-      
+      <p>Total Tasks: {totalTasks}</p>
+      <p>Completed Tasks: {completedTasks}</p>
       <table className="table-auto w-full">
         <thead>
           <tr>
@@ -168,4 +177,3 @@ const TodoList = () => {
 };
 
 export default TodoList;
-
