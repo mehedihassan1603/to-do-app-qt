@@ -17,6 +17,13 @@ const TodoList = () => {
       setNewTaskPriority('low');
     }
   };
+  const toggleCompletion = id => {
+    const updatedTasks = tasks.map(task =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
+  };
+
   const editTask = id => {
     const updatedTasks = tasks.map(task =>
       task.id === id ? { ...task, text: editedTaskText || task.text, priority: editedTaskPriority || task.priority } : task
@@ -109,7 +116,9 @@ const TodoList = () => {
               </td>
               <td className="border px-4 py-2">
                 <button
-                  >
+                  onClick={() => toggleCompletion(task.id)}
+                  className={`px-3 py-1 ${task.completed ? 'bg-green-500' : 'bg-yellow-500'} text-white rounded focus:outline-none`}
+                >
                   {task.completed ? 'Completed' : 'Complete'}
                 </button>
               </td>
