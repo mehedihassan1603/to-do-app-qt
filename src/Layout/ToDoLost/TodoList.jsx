@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState(() => {
@@ -17,47 +18,112 @@ const TodoList = () => {
   }, [tasks]);
   const addTask = () => {
     if (newTask.trim() !== "") {
-      const newTasks = [
-        ...tasks,
-        {
-          id: Date.now(),
-          text: newTask,
-          completed: false,
-          priority: newTaskPriority,
-        },
-      ];
-      setTasks(newTasks);
-      setNewTask("");
-      setNewTaskPriority("low");
+        const newTasks = [{ id: Date.now(), text: newTask, completed: false, priority: newTaskPriority }, ...tasks];
+        setTasks(newTasks);
+        setNewTask('');
+        setNewTaskPriority('low');
+      // Show a success message using SweetAlert
+      Swal.fire({
+        title: "Good job!",
+        text: "You've successfully added a new task!",
+        icon: "success",
+      });
+    } else {
+      // Show an error message if the new task is empty
+      Swal.fire({
+        title: "Error!",
+        text: "Task cannot be empty.",
+        icon: "error",
+        button: "OK",
+      });
     }
   };
 
-  const toggleCompletion = (id) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === id ? { ...task, completed: !task.completed } : task
-    );
-    setTasks(updatedTasks);
+  const toggleCompletion = (id, completed) => {
+    // Display a confirmation dialog using SweetAlert
+    Swal.fire({
+      title: completed
+        ? "Are you sure you want to mark this task as incomplete?"
+        : "Are you sure you want to mark this task as completed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: completed ? "Mark as Incomplete" : "Mark as Completed",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      // If user confirms the action
+      if (result.isConfirmed) {
+        // Toggle completion status
+        const updatedTasks = tasks.map((task) =>
+          task.id === id ? { ...task, completed: !completed } : task
+        );
+        // Update the state with the updated tasks
+        setTasks(updatedTasks);
+        // Show a success message using SweetAlert
+        Swal.fire({
+          title: completed
+            ? "Task marked as incomplete!"
+            : "Task marked as completed!",
+          icon: "success",
+        });
+      }
+    });
   };
 
   const editTask = (id) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === id
-        ? {
-            ...task,
-            text: editedTaskText || task.text,
-            priority: editedTaskPriority || task.priority,
-          }
-        : task
-    );
-    setTasks(updatedTasks);
-    setEditingTaskId(null);
-    setEditedTaskText("");
-    setEditedTaskPriority("");
+    // Display a confirmation dialog using SweetAlert
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Once edited, the changes will be applied.",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, edit it!",
+      cancelButtonText: "No, cancel!",
+    }).then((result) => {
+      // If user confirms editing
+      if (result.isConfirmed) {
+        // Update the task with the edited text and priority
+        const updatedTasks = tasks.map((task) =>
+          task.id === id
+            ? {
+                ...task,
+                text: editedTaskText || task.text,
+                priority: editedTaskPriority || task.priority,
+              }
+            : task
+        );
+        // Update the state with the edited tasks
+        setTasks(updatedTasks);
+        // Show a success message using SweetAlert
+        Swal.fire("Edited!", "Your task has been updated.", "success");
+        // Clear the editing state
+        setEditingTaskId(null);
+        setEditedTaskText("");
+        setEditedTaskPriority("");
+      }
+    });
   };
 
   const deleteTask = (id) => {
-    const updatedTasks = tasks.filter((task) => task.id !== id);
-    setTasks(updatedTasks);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this task!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedTasks = tasks.filter((task) => task.id !== id);
+        setTasks(updatedTasks);
+        Swal.fire("Deleted!", "Your task has been deleted.", "success");
+      }
+    });
   };
 
   const priorityColor = (priority) => {
@@ -165,16 +231,15 @@ const TodoList = () => {
                   task.priority
                 )}
               </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => toggleCompletion(task.id)}
-                  className={`px-3 py-1 ${
-                    task.completed ? "bg-green-500" : "bg-yellow-500"
-                  } text-white rounded focus:outline-none`}
-                >
-                  {task.completed ? "Completed" : "Complete"}
-                </button>
-              </td>
+              <button
+                onClick={() => toggleCompletion(task.id, task.completed)}
+                className={`px-3 py-1 ${
+                  task.completed ? "bg-green-500" : "bg-yellow-500"
+                } text-white rounded focus:outline-none`}
+              >
+                {task.completed ? "Completed" : "Incomplete"}
+              </button>
+
               <td className="border px-4 py-2">
                 {editingTaskId === task.id ? (
                   <>
