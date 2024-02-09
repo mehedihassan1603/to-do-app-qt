@@ -14,6 +14,18 @@ const TodoList = () => {
       setNewTaskPriority('low');
     }
   };
+  const priorityColor = priority => {
+    switch (priority) {
+      case 'low':
+        return 'bg-green-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'high':
+        return 'bg-red-500';
+      default:
+        return 'bg-green-500';
+    }
+  };
 
   return (
     <div className="container mx-auto mt-8">
@@ -39,6 +51,51 @@ const TodoList = () => {
           Add Task
         </button>
       </div>
+      <table className="table-auto w-full">
+        <thead>
+          <tr>
+            <th className="border px-4 py-2">Task</th>
+            <th className="border px-4 py-2">Priority</th>
+            <th className="border px-4 py-2">Status</th>
+            <th className="border px-4 py-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map(task => (
+            <tr >
+              <td className="border px-4 py-2">
+                {task.text}
+              </td>
+              <td className={`border px-4 py-2 ${priorityColor(task.priority)}`}>
+                {
+                  
+                  task.priority
+                }
+              </td>
+              <td className="border px-4 py-2">
+                <button
+                  
+                >
+                  {task.completed ? 'Completed' : 'Complete'}
+                </button>
+              </td>
+              <td>
+              <button
+                      
+                      className="px-3 py-1 bg-blue-500 text-white rounded focus:outline-none mr-2"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="px-3 py-1 bg-red-500 text-white rounded focus:outline-none"
+                    >
+                      Delete
+                    </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
