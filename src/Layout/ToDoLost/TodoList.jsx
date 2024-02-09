@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import "./styles.css";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState(() => {
@@ -18,18 +19,24 @@ const TodoList = () => {
   }, [tasks]);
   const addTask = () => {
     if (newTask.trim() !== "") {
-        const newTasks = [{ id: Date.now(), text: newTask, completed: false, priority: newTaskPriority }, ...tasks];
-        setTasks(newTasks);
-        setNewTask('');
-        setNewTaskPriority('low');
-      // Show a success message using SweetAlert
+      const newTasks = [
+        {
+          id: Date.now(),
+          text: newTask,
+          completed: false,
+          priority: newTaskPriority,
+        },
+        ...tasks,
+      ];
+      setTasks(newTasks);
+      setNewTask("");
+      setNewTaskPriority("low");
       Swal.fire({
         title: "Good job!",
         text: "You've successfully added a new task!",
         icon: "success",
       });
     } else {
-      // Show an error message if the new task is empty
       Swal.fire({
         title: "Error!",
         text: "Task cannot be empty.",
@@ -40,7 +47,6 @@ const TodoList = () => {
   };
 
   const toggleCompletion = (id, completed) => {
-    // Display a confirmation dialog using SweetAlert
     Swal.fire({
       title: completed
         ? "Are you sure you want to mark this task as incomplete?"
@@ -52,15 +58,11 @@ const TodoList = () => {
       confirmButtonText: completed ? "Mark as Incomplete" : "Mark as Completed",
       cancelButtonText: "Cancel",
     }).then((result) => {
-      // If user confirms the action
       if (result.isConfirmed) {
-        // Toggle completion status
         const updatedTasks = tasks.map((task) =>
           task.id === id ? { ...task, completed: !completed } : task
         );
-        // Update the state with the updated tasks
         setTasks(updatedTasks);
-        // Show a success message using SweetAlert
         Swal.fire({
           title: completed
             ? "Task marked as incomplete!"
@@ -72,7 +74,6 @@ const TodoList = () => {
   };
 
   const editTask = (id) => {
-    // Display a confirmation dialog using SweetAlert
     Swal.fire({
       title: "Are you sure?",
       text: "Once edited, the changes will be applied.",
@@ -83,9 +84,7 @@ const TodoList = () => {
       confirmButtonText: "Yes, edit it!",
       cancelButtonText: "No, cancel!",
     }).then((result) => {
-      // If user confirms editing
       if (result.isConfirmed) {
-        // Update the task with the edited text and priority
         const updatedTasks = tasks.map((task) =>
           task.id === id
             ? {
@@ -95,11 +94,8 @@ const TodoList = () => {
               }
             : task
         );
-        // Update the state with the edited tasks
         setTasks(updatedTasks);
-        // Show a success message using SweetAlert
         Swal.fire("Edited!", "Your task has been updated.", "success");
-        // Clear the editing state
         setEditingTaskId(null);
         setEditedTaskText("");
         setEditedTaskPriority("");
@@ -129,13 +125,13 @@ const TodoList = () => {
   const priorityColor = (priority) => {
     switch (priority) {
       case "low":
-        return "bg-green-500";
+        return "bg-green-400";
       case "medium":
-        return "bg-yellow-500";
+        return "bg-yellow-400";
       case "high":
-        return "bg-red-500";
+        return "bg-red-400";
       default:
-        return "bg-green-500";
+        return "bg-green-400";
     }
   };
 
@@ -146,20 +142,20 @@ const TodoList = () => {
     : tasks;
 
   return (
-    <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Todo List</h1>
-      <div className="mb-4 flex">
+    <div className="container mx-auto pt-8 mb-10 bg-gray-300">
+      <h1 className="text-3xl font-bold text-center mb-8">Todo List</h1>
+      <div className="mb-6 flex justify-center items-center">
         <input
           type="text"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter a new task..."
-          className="mr-2 px-2 py-1 border border-gray-300 focus:outline-none"
+          className="mr-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
         />
         <select
           value={newTaskPriority}
           onChange={(e) => setNewTaskPriority(e.target.value)}
-          className="mr-2 px-2 py-1 border border-gray-300 focus:outline-none"
+          className="mr-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none"
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -167,18 +163,25 @@ const TodoList = () => {
         </select>
         <button
           onClick={addTask}
-          className="px-3 py-1 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
         >
           Add Task
         </button>
       </div>
-      <p>Total Tasks: {totalTasks}</p>
-      <p>Completed Tasks: {completedTasks}</p>
-      <div className="mb-4 flex">
+      <div className="flex justify-center gap-10 text-xl my-6">
+        <p className="task-counter">
+          Total Tasks: <span className="font-bold">{totalTasks}</span>
+        </p>
+        <p className="task-counter">
+          Completed Tasks: <span className="font-bold">{completedTasks}</span>
+        </p>
+      </div>
+      <div className="mb-6 flex justify-center items-center">
+        <h1>Filter By Priority: </h1>
         <select
           value={filterPriority || ""}
           onChange={(e) => setFilterPriority(e.target.value || null)}
-          className="px-3 py-1 mr-2 bg-gray-300 hover:bg-gray-400 focus:outline-none"
+          className="px-4 py-2 bg-gray-200 border border-slate-600 rounded-lg focus:outline-none"
         >
           <option value="">All</option>
           <option value="low">Low Priority</option>
@@ -187,100 +190,110 @@ const TodoList = () => {
         </select>
       </div>
 
-      <table className="table-auto w-full">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Task</th>
-            <th className="border px-4 py-2">Priority</th>
-            <th className="border px-4 py-2">Status</th>
-            <th className="border px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTasks.map((task) => (
-            <tr
-              key={task.id}
-              className={editingTaskId === task.id ? "bg-gray-100" : ""}
-            >
-              <td className="border px-4 py-2">
-                {editingTaskId === task.id ? (
-                  <input
-                    type="text"
-                    value={editedTaskText || task.text}
-                    onChange={(e) => setEditedTaskText(e.target.value)}
-                    className="px-2 py-1 border border-gray-300 focus:outline-none"
-                  />
-                ) : (
-                  task.text
-                )}
-              </td>
-              <td
-                className={`border px-4 py-2 ${priorityColor(task.priority)}`}
-              >
-                {editingTaskId === task.id ? (
-                  <select
-                    value={editedTaskPriority || task.priority}
-                    onChange={(e) => setEditedTaskPriority(e.target.value)}
-                    className="px-2 py-1 border border-gray-300 focus:outline-none"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                ) : (
-                  task.priority
-                )}
-              </td>
-              <button
-                onClick={() => toggleCompletion(task.id, task.completed)}
-                className={`px-3 py-1 ${
-                  task.completed ? "bg-green-500" : "bg-yellow-500"
-                } text-white rounded focus:outline-none`}
-              >
-                {task.completed ? "Completed" : "Incomplete"}
-              </button>
-
-              <td className="border px-4 py-2">
-                {editingTaskId === task.id ? (
-                  <>
-                    <button
-                      onClick={() => editTask(task.id)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded focus:outline-none mr-2"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingTaskId(null);
-                        setEditedTaskText("");
-                        setEditedTaskPriority("");
-                      }}
-                      className="px-3 py-1 bg-gray-500 text-white rounded focus:outline-none"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => setEditingTaskId(task.id)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded focus:outline-none mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => deleteTask(task.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded focus:outline-none"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full bg-cyan-400 border-gray-300 rounded-lg shadow-md">
+          <thead>
+            <tr className="bg-slate-600 border-b text-white font-bold text-lg">
+              <th className="px-4 py-2">Task</th>
+              <th className="px-4 py-2">Priority</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredTasks.map((task) => (
+              <tr
+                key={task.id}
+                className={
+                  editingTaskId === task.id ? "border-t border-gray-300" : ""
+                }
+              >
+                <td className="border text-center px-4 py-2">
+                  {editingTaskId === task.id ? (
+                    <input
+                      type="text"
+                      value={editedTaskText || task.text}
+                      onChange={(e) => setEditedTaskText(e.target.value)}
+                      className="px-2 py-1 border border-gray-300 focus:outline-none"
+                    />
+                  ) : (
+                    task.text
+                  )}
+                </td>
+                <td
+                  className={`px-1 border-b text-center font-bold ${priorityColor(
+                    task.priority
+                  )}`}
+                >
+                  {editingTaskId === task.id ? (
+                    <select
+                      value={editedTaskPriority || task.priority}
+                      onChange={(e) => setEditedTaskPriority(e.target.value)}
+                      className="px-2 border border-gray-300 focus:outline-none"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  ) : (
+                    task.priority
+                  )}
+                </td>
+                <td className="text-center border-b">
+                  <button
+                    onClick={() => toggleCompletion(task.id, task.completed)}
+                    className={`px-4 py-2 ${
+                      task.completed
+                        ? "bg-green-500 hover:bg-green-600"
+                        : "bg-yellow-500 hover:bg-yellow-600"
+                    } text-white rounded focus:outline-none`}
+                  >
+                    {task.completed ? "Completed" : "Incomplete"}
+                  </button>
+                </td>
+
+                <td className="border py-2 text-center">
+                  {editingTaskId === task.id ? (
+                    <>
+                      <button
+                        onClick={() => editTask(task.id)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded focus:outline-none mr-2"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingTaskId(null);
+                          setEditedTaskText("");
+                          setEditedTaskPriority("");
+                        }}
+                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setEditingTaskId(task.id)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteTask(task.id)}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

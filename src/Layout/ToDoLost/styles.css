@@ -1,0 +1,9 @@
+.task-counter {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .task-counter:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+  
