@@ -1,65 +1,83 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const TodoList = () => {
-    const [tasks, setTasks] = useState(() => {
-        const storedTasks = localStorage.getItem('tasks');
-        return storedTasks ? JSON.parse(storedTasks) : [];
-      });
-  const [newTask, setNewTask] = useState('');
-  const [newTaskPriority, setNewTaskPriority] = useState('low');
+  const [tasks, setTasks] = useState(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    return storedTasks ? JSON.parse(storedTasks) : [];
+  });
+  const [newTask, setNewTask] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState("low");
   const [editingTaskId, setEditingTaskId] = useState(null);
-  const [editedTaskText, setEditedTaskText] = useState('');
-  const [editedTaskPriority, setEditedTaskPriority] = useState('');
+  const [editedTaskText, setEditedTaskText] = useState("");
+  const [editedTaskPriority, setEditedTaskPriority] = useState("");
+  const [filterPriority, setFilterPriority] = useState(null);
 
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
   const addTask = () => {
-    if (newTask.trim() !== '') {
-      const newTasks = [...tasks, { id: Date.now(), text: newTask, completed: false, priority: newTaskPriority }];
+    if (newTask.trim() !== "") {
+      const newTasks = [
+        ...tasks,
+        {
+          id: Date.now(),
+          text: newTask,
+          completed: false,
+          priority: newTaskPriority,
+        },
+      ];
       setTasks(newTasks);
-      setNewTask('');
-      setNewTaskPriority('low');
+      setNewTask("");
+      setNewTaskPriority("low");
     }
   };
 
-  const toggleCompletion = id => {
-    const updatedTasks = tasks.map(task =>
+  const toggleCompletion = (id) => {
+    const updatedTasks = tasks.map((task) =>
       task.id === id ? { ...task, completed: !task.completed } : task
     );
     setTasks(updatedTasks);
   };
 
-  const editTask = id => {
-    const updatedTasks = tasks.map(task =>
-      task.id === id ? { ...task, text: editedTaskText || task.text, priority: editedTaskPriority || task.priority } : task
+  const editTask = (id) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id
+        ? {
+            ...task,
+            text: editedTaskText || task.text,
+            priority: editedTaskPriority || task.priority,
+          }
+        : task
     );
     setTasks(updatedTasks);
     setEditingTaskId(null);
-    setEditedTaskText('');
-    setEditedTaskPriority('');
+    setEditedTaskText("");
+    setEditedTaskPriority("");
   };
 
-  const deleteTask = id => {
-    const updatedTasks = tasks.filter(task => task.id !== id);
+  const deleteTask = (id) => {
+    const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
   };
 
-  const priorityColor = priority => {
+  const priorityColor = (priority) => {
     switch (priority) {
-      case 'low':
-        return 'bg-green-500';
-      case 'medium':
-        return 'bg-yellow-500';
-      case 'high':
-        return 'bg-red-500';
+      case "low":
+        return "bg-green-500";
+      case "medium":
+        return "bg-yellow-500";
+      case "high":
+        return "bg-red-500";
       default:
-        return 'bg-green-500';
+        return "bg-green-500";
     }
   };
 
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(task => task.completed).length;
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const filteredTasks = filterPriority
+    ? tasks.filter((task) => task.priority === filterPriority)
+    : tasks;
 
   return (
     <div className="container mx-auto mt-8">
@@ -68,25 +86,41 @@ const TodoList = () => {
         <input
           type="text"
           value={newTask}
-          onChange={e => setNewTask(e.target.value)}
+          onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter a new task..."
           className="mr-2 px-2 py-1 border border-gray-300 focus:outline-none"
         />
         <select
           value={newTaskPriority}
-          onChange={e => setNewTaskPriority(e.target.value)}
+          onChange={(e) => setNewTaskPriority(e.target.value)}
           className="mr-2 px-2 py-1 border border-gray-300 focus:outline-none"
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
         </select>
-        <button onClick={addTask} className="px-3 py-1 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none">
+        <button
+          onClick={addTask}
+          className="px-3 py-1 bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
+        >
           Add Task
         </button>
       </div>
       <p>Total Tasks: {totalTasks}</p>
       <p>Completed Tasks: {completedTasks}</p>
+      <div className="mb-4 flex">
+        <select
+          value={filterPriority || ""}
+          onChange={(e) => setFilterPriority(e.target.value || null)}
+          className="px-3 py-1 mr-2 bg-gray-300 hover:bg-gray-400 focus:outline-none"
+        >
+          <option value="">All</option>
+          <option value="low">Low Priority</option>
+          <option value="medium">Medium Priority</option>
+          <option value="high">High Priority</option>
+        </select>
+      </div>
+
       <table className="table-auto w-full">
         <thead>
           <tr>
@@ -97,25 +131,30 @@ const TodoList = () => {
           </tr>
         </thead>
         <tbody>
-          {tasks.map(task => (
-            <tr key={task.id} className={editingTaskId === task.id ? 'bg-gray-100' : ''}>
+          {filteredTasks.map((task) => (
+            <tr
+              key={task.id}
+              className={editingTaskId === task.id ? "bg-gray-100" : ""}
+            >
               <td className="border px-4 py-2">
                 {editingTaskId === task.id ? (
                   <input
                     type="text"
                     value={editedTaskText || task.text}
-                    onChange={e => setEditedTaskText(e.target.value)}
+                    onChange={(e) => setEditedTaskText(e.target.value)}
                     className="px-2 py-1 border border-gray-300 focus:outline-none"
                   />
                 ) : (
                   task.text
                 )}
               </td>
-              <td className={`border px-4 py-2 ${priorityColor(task.priority)}`}>
+              <td
+                className={`border px-4 py-2 ${priorityColor(task.priority)}`}
+              >
                 {editingTaskId === task.id ? (
                   <select
                     value={editedTaskPriority || task.priority}
-                    onChange={e => setEditedTaskPriority(e.target.value)}
+                    onChange={(e) => setEditedTaskPriority(e.target.value)}
                     className="px-2 py-1 border border-gray-300 focus:outline-none"
                   >
                     <option value="low">Low</option>
@@ -129,9 +168,11 @@ const TodoList = () => {
               <td className="border px-4 py-2">
                 <button
                   onClick={() => toggleCompletion(task.id)}
-                  className={`px-3 py-1 ${task.completed ? 'bg-green-500' : 'bg-yellow-500'} text-white rounded focus:outline-none`}
+                  className={`px-3 py-1 ${
+                    task.completed ? "bg-green-500" : "bg-yellow-500"
+                  } text-white rounded focus:outline-none`}
                 >
-                  {task.completed ? 'Completed' : 'Complete'}
+                  {task.completed ? "Completed" : "Complete"}
                 </button>
               </td>
               <td className="border px-4 py-2">
@@ -146,8 +187,8 @@ const TodoList = () => {
                     <button
                       onClick={() => {
                         setEditingTaskId(null);
-                        setEditedTaskText('');
-                        setEditedTaskPriority('');
+                        setEditedTaskText("");
+                        setEditedTaskPriority("");
                       }}
                       className="px-3 py-1 bg-gray-500 text-white rounded focus:outline-none"
                     >
