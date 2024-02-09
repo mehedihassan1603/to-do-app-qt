@@ -14,6 +14,10 @@ const TodoList = () => {
       setNewTaskPriority('low');
     }
   };
+  const deleteTask = id => {
+    const updatedTasks = tasks.filter(task => task.id !== id);
+    setTasks(updatedTasks);
+  };
   const priorityColor = priority => {
     switch (priority) {
       case 'low':
@@ -87,6 +91,7 @@ const TodoList = () => {
                       Edit
                     </button>
                     <button
+                      onClick={() => deleteTask(task.id)}
                       className="px-3 py-1 bg-red-500 text-white rounded focus:outline-none"
                     >
                       Delete
